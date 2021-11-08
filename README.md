@@ -261,3 +261,5 @@ For more information on composing components of other components:
 * https://reactjs.org/docs/components-and-props.html#extracting-components
 
 ## [State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
+
+TODO: add different routes to show each demo code.
