@@ -1,40 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-
-
-// We can create ad-hoc attributes as needed and reference them later.
-// It is not totally clear how things work here - for example, we use
-// `this.props.value` here, but is it created here, or is it created
-// at-render time when `Board` extends the React.Component and renders
-// the square (`renderSquare`).
-class Square extends React.Component {
-  render() {
-    // this is a runtime binding determined by how a function is called.
-    return (
-      <button className="square">
-        {this.props.value}
-      </button>
-    );
-  }
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import { calculateWinner } from "./tools";
+function Square(props) {
+  return (
+    <button className="square" onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
 }
 
 class Board extends React.Component {
-  // Here we define a method, `renderSquare` which takes one argument and returns
-  // a rendered Square.
   renderSquare(i) {
-    // We take the class square (which is actually an HTML element at it's heart)
-    // and give it an attribute, value, set to the argument of render square.
-    return <Square value={i}/>;
+    return (
+      <Square
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
+      />
+    );
   }
 
-  // Here, we define a method called 'render', which renders the board with squares.
   render() {
-    const status = 'Next player: X';
-
     return (
       <div>
-        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -56,15 +44,79 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      history: [
+        {
+          squares: Array(9).fill(null)
+        }
+      ],
+      stepNumber: 0,
+      xIsNext: true
+    };
+  }
+
+  handleClick(i) {
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? "X" : "O";
+    this.setState({
+      history: history.concat([
+        {
+          squares: squares
+        }
+      ]),
+      stepNumber: history.length,
+      xIsNext: !this.state.xIsNext
+    });
+  }
+
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0
+    });
+  }
+
   render() {
+    const history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const winner = calculateWinner(current.squares);
+
+    const moves = history.map((step, move) => {
+      const desc = move ?
+        'Go to move #' + move :
+        'Go to game start';
+      return (
+        <li key={move}>
+          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      );
+    });
+
+    let status;
+    if (winner) {
+      status = "Winner: " + winner;
+    } else {
+      status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+    }
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={current.squares}
+            onClick={i => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+          <div>{status}</div>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
@@ -72,7 +124,4 @@ class Game extends React.Component {
 }
 
 // ========================================
-ReactDOM.render(
-  <Game />,
-  document.getElementById('root')
-);
+ReactDOM.render(<Game />, document.getElementById("root"));

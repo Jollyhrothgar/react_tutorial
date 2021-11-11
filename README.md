@@ -6,18 +6,26 @@ Other useful docs:
 
 - Hello World Docs: https://reactjs.org/docs/hello-world.html
   - Defines: JSX, Rendering Elements, Components and Props, State and Lifecycle,
-  Handling Events, COnditional Rendering, Lists and Keys, Forms, Lifting State
-  Up, Composition vs Inheritance, and Thinking in React
+    Handling Events, COnditional Rendering, Lists and Keys, Forms, Lifting State
+    Up, Composition vs Inheritance, and Thinking in React
 
 React is for building user interfaces. It is "declarative".
 
 React behaves somewhat like a template, where you add snippets of html as react
 componants.
 
+## React Tic Tac Toe
 
-## React Component Class / Type**
+Suggestion is to build 'pure' react components, that is, components which have
+a fixed state that is overwritten, rather than mutated.
+
+- Function Component: simpler way to write components that onyl contains a
+  render function which takes `props`.
+## React Documents
+### React Component Class / Type
 
 Parameters
+
 - `props`: properties
 
 Returns a hierarchy of views with `render`. Render returns a _react element_.
@@ -64,34 +72,30 @@ the curly braces of JSX.
 It's a little confusing in React to observe how and when object properties get
 defined. It seems to be sort of in this ad-hoc manner, that defines them and
 then uses them later, but without a lot of useful annotation. Where's the class
-definition? 
+definition?
 
-## [JSX](https://reactjs.org/docs/introducing-jsx.html)
+### [JSX](https://reactjs.org/docs/introducing-jsx.html)
 
 JSX is compiled by Babel - the following two statements are identical:
 
 ```javascript
 // JSX:
-const element = (
-  <h1 className="greeting">
-    Hello, world!
-  </h1>
-);
+const element = <h1 className="greeting">Hello, world!</h1>;
 
 // Babel Compiled:
 const element = React.createElement(
-  'h1',
-  {className: 'greeting'},
-  'Hello, World'
+  "h1",
+  { className: "greeting" },
+  "Hello, World"
 );
 
 // Which creates a javascript object like this (simplified)
 const element = {
-  type: 'h1',
+  type: "h1",
   props: {
-    className: 'greeting',
-    children: 'Hello, world!'
-  }
+    className: "greeting",
+    children: "Hello, world!",
+  },
 };
 ```
 
@@ -99,22 +103,19 @@ Succinctly, react creates react elements, which represent what we want to see on
 
 ```javascript
 // Note that we don't need quotes around html flavored elements.
-const name = 'Josh Perez';
+const name = "Josh Perez";
 // Any valid javascript goes into {}. Note that when there are line breaks //
 // indentation changes, javascript will automatically insert semicolons. If you
 // don't want to understand the exact semantic cases where ASI (automatic
 // semicolon insertion) happens, simple wrap multiline JSX in parens.
 const element = <h1>Hello, {name}</h1>;
 
-ReactDOM.render(
-  element,
-  document.getElementById('root')
-);
+ReactDOM.render(element, document.getElementById("root"));
 
 // After compilation, JSX expressions turn into regular javascript function
 // calls and classes.
 
-// Use CamelCase instead of snake_case 
+// Use CamelCase instead of snake_case
 ```
 
 Note, in JSX, empty elements are closed with 'one element' notation, e.g.
@@ -127,7 +128,7 @@ const element <img src={user.avatarUrl} />;
 const element <img src={user.avatarUrl}></img>;
 ```
 
-## [React DOM](https://reactjs.org/docs/rendering-elements.html)
+### [React DOM](https://reactjs.org/docs/rendering-elements.html)
 
 A react element describes what we want to see on the screen. React elements are
 plain objects. A react componant is _composed_ of react elements.
@@ -146,14 +147,14 @@ Rendering react element:
 
 ```javascript
 const element = <h1>Hello, world!</h1>;
-ReactDOM.render(element, document.getElementById('root'));
+ReactDOM.render(element, document.getElementById("root"));
 ```
 
 React elements are immutable - they represent an app at a particular time point.
 
 React updates what is necessary - and while `render` usually called once, a
 react app can re-render the whole app with a new react object representing the
-state of the page.  Under the hood, react only updates what is necessary.
+state of the page. Under the hood, react only updates what is necessary.
 
 Think about what the UI needs to look like at a particular point in time, rather
 than how it changes over time (stateful!).
@@ -170,17 +171,17 @@ function tick() {
   );
 }
 
-ReactDOM.render(element, document.getElementById('root'));
+ReactDOM.render(element, document.getElementById("root"));
 setInterval(tick, 1000);
 ```
 
-## [Components and Props](https://reactjs.org/docs/components-and-props.html)
+### [Components and Props](https://reactjs.org/docs/components-and-props.html)
 
 Componants exist to split the UI into independent and reusable pieces and manage
 each piece in isolation.
 
 - Components accept `props` and return React Elements which describe what should
-appear on the screen.
+  appear on the screen.
 
 Two ways to define components (function, ES6 class)
 
@@ -193,7 +194,7 @@ function Welcome(props) {
 // Use a class
 class Welcome extends React.Component {
   render() {
-    return <h1>Hello, {this.props.name}</h1>
+    return <h1>Hello, {this.props.name}</h1>;
   }
 }
 ```
@@ -207,6 +208,7 @@ const element = <div />;
 // User defined component
 const element = <Welcome name="Sara" />;
 ```
+
 When react sees a user-defined component, it passes JSX attributes and children
 to this compoent as a single object called `props`.
 
@@ -215,8 +217,9 @@ Example of a user-defined component:
 ```javascript
 // This defines an element called 'Welcome' which takes props, and expects props
 // to have an attribute called name. Welcome elements are now defined to be an h1
-// heading 
-function Welcome(props) { // This is a component
+// heading
+function Welcome(props) {
+  // This is a component
   /* A component */
   return <h1>Hello, {props.name}</h1>;
 }
@@ -225,12 +228,8 @@ function Welcome(props) { // This is a component
 // - A user-defined element mapping to component type 'Welcome'.
 const element = <Welcome name="Sara" />;
 
-
 // This takes the element we just created above and appends it to the root node.
-ReactDOM.render(
-  element,
-  document.getElementById('root')
-);
+ReactDOM.render(element, document.getElementById("root"));
 ```
 
 Note that in this case, the order of operations is not strictly the logical
@@ -254,12 +253,12 @@ inputs.
 React components may _not_ modify their props.
 
 However, apps are dynamic, and state changes. So, it is possible for React
-components to change their _output_ over time. 
+components to change their _output_ over time.
 
 For more information on composing components of other components:
 
-* https://reactjs.org/docs/components-and-props.html#extracting-components
+- https://reactjs.org/docs/components-and-props.html#extracting-components
 
-## [State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
+### [State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
 
-TODO: add different routes to show each demo code.
+This needs more attention.
